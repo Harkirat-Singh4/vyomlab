@@ -47,16 +47,27 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
+        rocket: {
+          thrust: "hsl(var(--rocket-thrust))",
+          "thrust-hot": "hsl(var(--rocket-thrust-hot))",
+          metal: "hsl(var(--rocket-metal))",
+          warning: "hsl(var(--rocket-warning))",
+          success: "hsl(var(--rocket-success))",
         },
+      },
+      backgroundImage: {
+        "gradient-thrust": "var(--gradient-thrust)",
+        "gradient-space": "var(--gradient-space)",
+        "gradient-primary": "var(--gradient-primary)",
+      },
+      boxShadow: {
+        glow: "var(--shadow-glow)",
+        thrust: "var(--shadow-thrust)",
+        cosmic: "var(--shadow-cosmic)",
+      },
+      transitionTimingFunction: {
+        smooth: "cubic-bezier(0.4, 0, 0.2, 1)",
+        bounce: "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
       },
       borderRadius: {
         lg: "var(--radius)",
