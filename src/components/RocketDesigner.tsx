@@ -1,11 +1,16 @@
 import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Rocket, Zap, BarChart3, Settings, Play, Pause } from "lucide-react";
+import { Rocket, Zap, BarChart3, Settings, Play, Pause, Database, Target } from "lucide-react";
 import { ComponentLibrary } from "./ComponentLibrary";
 import { RocketCanvas } from "./RocketCanvas";
 import { SimulationPanel } from "./SimulationPanel";
 import { AIAssistant } from "./AIAssistant";
+import { MotorDatabase } from "./MotorDatabase";
+import { DetailedComponentProperties } from "./DetailedComponentProperties";
+import { FlightDataGraph } from "./FlightDataGraph";
+import { StabilityAnalysis } from "./StabilityAnalysis";
+import { PhysicsEngine, type FlightDataPoint, type MotorData } from "./PhysicsEngine";
 
 export interface RocketComponent {
   id: string;
@@ -23,8 +28,12 @@ export interface RocketComponent {
 export const RocketDesigner = () => {
   const [components, setComponents] = useState<RocketComponent[]>([]);
   const [selectedComponent, setSelectedComponent] = useState<string | null>(null);
+  const [selectedMotor, setSelectedMotor] = useState<MotorData | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
-  const [activeTab, setActiveTab] = useState<"design" | "simulate" | "analyze">("design");
+  const [activeTab, setActiveTab] = useState<"design" | "simulate" | "analyze" | "motors" | "stability">("design");
+  const [flightData, setFlightData] = useState<FlightDataPoint[]>([]);
+  const [showComponentProps, setShowComponentProps] = useState(false);
+  const physicsEngine = new PhysicsEngine();
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const handleDrop = (e: React.DragEvent) => {
@@ -66,16 +75,47 @@ export const RocketDesigner = () => {
   };
 
   const toggleSimulation = () => {
-    setIsSimulating(!isSimulating);
-    if (!isSimulating) {
-      setActiveTab("simulate");
+    if (!isSimulating && selectedMotor) {
+      // Start simulation with selected motor
+      const rocketPhysics = {
+        totalMass: components.reduce((sum, comp) => sum + comp.mass, 0) + (selectedMotor?.totalMass || 0),
+        dryMass: components.reduce((sum, comp) => sum + comp.mass, 0),
+        propellantMass: selectedMotor?.propellantMass || 0,
+        centerOfGravity: physicsEngine.calculateCenterOfGravity(components),
+        centerOfPressure: physicsEngine.calculateCenterOfPressure(components),
+        stabilityMargin: 0,
+        dragCoefficient: components.reduce((sum, comp) => sum + comp.dragCoefficient, 0),
+        referenceArea: Math.PI * Math.pow(Math.max(...components.map(c => c.width)) / 2000, 2),
+        length: Math.max(...components.map(c => c.y + c.height)) / 1000,
+        diameter: Math.max(...components.map(c => c.width)) / 1000
+      };
+
+      const launchConditions = {
+        altitude: 0,
+        temperature: 20,
+        pressure: 101325,
+        humidity: 0.5,
+        windSpeed: 5,
+        windDirection: 0,
+        launchAngle: 90,
+        launchDirection: 0,
+        rodLength: 1
+      };
+
+      const results = physicsEngine.runFullSimulation(rocketPhysics, selectedMotor, launchConditions);
+      setFlightData(results);
+      setActiveTab("analyze");
     }
+    
+    setIsSimulating(!isSimulating);
   };
 
   const tabs = [
     { id: "design", label: "Design", icon: Rocket },
+    { id: "motors", label: "Motors", icon: Database },
+    { id: "stability", label: "Stability", icon: Target },
     { id: "simulate", label: "Simulate", icon: Zap },
-    { id: "analyze", label: "Analyze", icon: BarChart3 },
+    { id: "analyze", label: "Analysis", icon: BarChart3 },
   ];
 
   return (
@@ -111,6 +151,7 @@ export const RocketDesigner = () => {
               
               <Button
                 onClick={toggleSimulation}
+                disabled={!selectedMotor || components.length === 0}
                 variant={isSimulating ? "destructive" : "default"}
                 size="sm"
                 className="flex items-center gap-2"
@@ -126,9 +167,16 @@ export const RocketDesigner = () => {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-12 gap-6 h-[calc(100vh-200px)]">
-          {/* Component Library */}
+          {/* Left Panel - Component Library or Motor Database */}
           <div className="col-span-3">
-            <ComponentLibrary />
+            {activeTab === "motors" ? (
+              <MotorDatabase 
+                selectedMotor={selectedMotor}
+                onMotorSelect={setSelectedMotor}
+              />
+            ) : (
+              <ComponentLibrary />
+            )}
           </div>
           
           {/* Canvas Area */}
@@ -151,16 +199,30 @@ export const RocketDesigner = () => {
           <div className="col-span-3 space-y-4">
             {activeTab === "design" && (
               <Card className="p-4 cosmic-border">
-                <div className="flex items-center gap-2 mb-4">
-                  <Settings className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold">Component Properties</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Settings className="h-5 w-5 text-primary" />
+                    <h3 className="font-semibold">Component Properties</h3>
+                  </div>
+                  {selectedComponent && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowComponentProps(true)}
+                    >
+                      Edit
+                    </Button>
+                  )}
                 </div>
                 {selectedComponent ? (
                   <div className="space-y-3">
                     <p className="text-sm text-muted-foreground">
-                      Configure the selected component properties
+                      Component selected: {components.find(c => c.id === selectedComponent)?.name}
                     </p>
-                    {/* Component properties will be implemented */}
+                    <div className="text-xs space-y-1">
+                      <div>Mass: {components.find(c => c.id === selectedComponent)?.mass.toFixed(4)} kg</div>
+                      <div>Drag Cd: {components.find(c => c.id === selectedComponent)?.dragCoefficient.toFixed(3)}</div>
+                    </div>
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">
@@ -170,17 +232,43 @@ export const RocketDesigner = () => {
               </Card>
             )}
             
-            {(activeTab === "simulate" || activeTab === "analyze") && (
-              <SimulationPanel 
+            {activeTab === "stability" && (
+              <StabilityAnalysis 
                 components={components}
-                isSimulating={isSimulating}
-                activeTab={activeTab}
+                selectedMotor={selectedMotor}
               />
             )}
             
-            <AIAssistant components={components} />
+            {(activeTab === "simulate" || activeTab === "analyze") && (
+              activeTab === "analyze" ? (
+                <FlightDataGraph 
+                  flightData={flightData}
+                  isSimulating={isSimulating}
+                />
+              ) : (
+                <SimulationPanel 
+                  components={components}
+                  selectedMotor={selectedMotor}
+                  isSimulating={isSimulating}
+                  activeTab={activeTab}
+                />
+              )
+            )}
+            
+            <AIAssistant components={components} selectedMotor={selectedMotor} />
           </div>
         </div>
+        
+        {/* Component Properties Modal */}
+        {showComponentProps && selectedComponent && (
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+            <DetailedComponentProperties
+              component={components.find(c => c.id === selectedComponent) || null}
+              onComponentUpdate={handleComponentUpdate}
+              onClose={() => setShowComponentProps(false)}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

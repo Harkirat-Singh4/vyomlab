@@ -16,6 +16,7 @@ import type { RocketComponent } from "./RocketDesigner";
 
 interface AIAssistantProps {
   components: RocketComponent[];
+  selectedMotor?: any;
 }
 
 interface Message {
@@ -25,7 +26,7 @@ interface Message {
   timestamp: Date;
 }
 
-const generateAIResponse = (components: RocketComponent[], userMessage: string): string => {
+const generateAIResponse = (components: RocketComponent[], selectedMotor: any, userMessage: string): string => {
   const totalMass = components.reduce((sum, comp) => sum + comp.mass, 0);
   const hasNoseCone = components.some(c => c.type === 'nosecone');
   const hasEngine = components.some(c => c.type === 'engine');
@@ -41,10 +42,11 @@ const generateAIResponse = (components: RocketComponent[], userMessage: string):
   }
 
   if (userMessage.toLowerCase().includes('altitude') || userMessage.toLowerCase().includes('height')) {
-    if (!hasEngine) {
-      return "You'll need to add an engine to achieve any altitude! Try adding a solid motor from the component library.";
+    if (!hasEngine || !selectedMotor) {
+      return "You'll need to add an engine and select a motor from the Motors tab to achieve any altitude!";
     }
-    return `With your current design (${totalMass.toFixed(2)}kg), you should reach approximately ${(300 - totalMass * 50).toFixed(0)}m altitude. Reduce mass or add more thrust for higher flights.`;
+    const predictedAltitude = selectedMotor ? (selectedMotor.totalImpulse * 100 / totalMass) : 0;
+    return `With your current design (${totalMass.toFixed(2)}kg) and the ${selectedMotor?.designation || 'selected'} motor, you should reach approximately ${predictedAltitude.toFixed(0)}m altitude.`;
   }
 
   if (userMessage.toLowerCase().includes('safety') || userMessage.toLowerCase().includes('recovery')) {
@@ -77,12 +79,12 @@ const generateAIResponse = (components: RocketComponent[], userMessage: string):
   return responses[Math.floor(Math.random() * responses.length)];
 };
 
-export const AIAssistant = ({ components }: AIAssistantProps) => {
+export const AIAssistant = ({ components, selectedMotor }: AIAssistantProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
       type: "assistant",
-      content: "Hello! I'm your AI rocketry co-pilot. I can help you optimize your rocket design for maximum performance and safety. What would you like to know?",
+      content: "Hello! I'm your AI rocketry co-pilot. I can help you optimize your rocket design, select appropriate motors, and analyze stability. What would you like to know?",
       timestamp: new Date()
     }
   ]);
@@ -108,7 +110,7 @@ export const AIAssistant = ({ components }: AIAssistantProps) => {
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
         type: "assistant",
-        content: generateAIResponse(components, inputValue),
+        content: generateAIResponse(components, selectedMotor, inputValue),
         timestamp: new Date()
       };
       
@@ -140,7 +142,7 @@ export const AIAssistant = ({ components }: AIAssistantProps) => {
       insights.push({
         type: "warning",
         icon: AlertTriangle,
-        message: "Add fins for stability"
+        message: "Add engine and select motor"
       });
     }
 

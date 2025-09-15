@@ -19,6 +19,7 @@ import type { RocketComponent } from "./RocketDesigner";
 
 interface SimulationPanelProps {
   components: RocketComponent[];
+  selectedMotor: any;
   isSimulating: boolean;
   activeTab: "simulate" | "analyze";
 }
@@ -35,6 +36,7 @@ interface SimulationData {
 
 export const SimulationPanel = ({ 
   components, 
+  selectedMotor,
   isSimulating, 
   activeTab 
 }: SimulationPanelProps) => {
@@ -63,8 +65,9 @@ export const SimulationPanel = ({
         // Simple rocket physics
         const engines = components.filter(c => c.type === 'engine');
         const totalMass = components.reduce((sum, comp) => sum + comp.mass, 0) || 1;
-        const thrust = engines.length > 0 && newTime < 3 ? 50 : 0; // 3 second burn
-        const drag = -0.5 * prev.velocity * Math.abs(prev.velocity);
+        const thrust = engines.length > 0 && newTime < (selectedMotor?.burnTime || 3) ? 
+          (selectedMotor?.averageThrust || 50) : 0;
+        const drag = -0.5 * prev.velocity * Math.abs(prev.velocity) * 0.01;
         const gravity = -9.81;
         
         const acceleration = (thrust + drag + gravity * totalMass) / totalMass;
@@ -118,8 +121,35 @@ export const SimulationPanel = ({
   };
 
   if (activeTab === "simulate") {
+    if (!selectedMotor) {
+      return (
+        <Card className="p-4 cosmic-border">
+          <div className="text-center text-muted-foreground">
+            <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <h3 className="text-lg font-medium mb-2">No Motor Selected</h3>
+            <p className="text-sm">Select a motor from the Motors tab to enable simulation</p>
+          </div>
+        </Card>
+      );
+    }
     return (
       <div className="space-y-4">
+        <Card className="p-4 cosmic-border">
+          <div className="flex items-center gap-2 mb-4">
+            <Activity className="h-5 w-5 text-rocket-thrust" />
+            <h3 className="font-semibold">Selected Motor</h3>
+          </div>
+          <div className="bg-muted/50 p-3 rounded-lg">
+            <div className="font-medium text-lg">{selectedMotor.designation}</div>
+            <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
+              <div>Impulse: {selectedMotor.totalImpulse} N⋅s</div>
+              <div>Burn: {selectedMotor.burnTime}s</div>
+              <div>Avg Thrust: {selectedMotor.averageThrust}N</div>
+              <div>Mass: {(selectedMotor.totalMass * 1000).toFixed(0)}g</div>
+            </div>
+          </div>
+        </Card>
+        
         <Card className="p-4 cosmic-border">
           <div className="flex items-center gap-2 mb-4">
             <Activity className="h-5 w-5 text-primary" />
