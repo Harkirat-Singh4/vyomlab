@@ -260,6 +260,128 @@ const analyzeDesignProblems = (components: RocketComponent[], selectedMotor: any
   return { issues, recommendations, metrics };
 };
 
+// Educational definitions database
+const EDUCATIONAL_DEFINITIONS = {
+  'barrowman stability': `**Barrowman Stability Theory** 📐
+
+Developed by James and Judith Barrowman, this method calculates the Center of Pressure (CP) for rocket stability analysis.
+
+**Key Concepts:**
+- **Static Margin (SM)**: Distance between Center of Gravity (CG) and Center of Pressure (CP)
+- **Stability Criterion**: SM should be 1-2 calibers for stable flight
+- **Caliber**: Rocket body diameter used as measurement unit
+
+**Barrowman Equations:**
+- Nose Cone CP: 0.466 × nose cone length from tip
+- Body Tube CP: At geometric center
+- Fin CP: Complex calculation based on fin geometry
+
+**Practical Application:**
+A rocket is stable when CP is behind CG by 1-2 calibers. This ensures aerodynamic restoring forces will correct any flight deviations.`,
+
+  'center of pressure': `**Center of Pressure (CP)** 🎯
+
+The point where aerodynamic forces act on the rocket during flight.
+
+**Physics:**
+- Location where resultant aerodynamic force is applied
+- Moves with angle of attack and airflow conditions
+- Critical for stability calculations
+
+**Calculation Methods:**
+- **Barrowman Method**: Most accurate for model rockets
+- **Geometric Method**: Simplified approximation
+- **CFD Analysis**: Computer fluid dynamics for complex shapes
+
+**Practical Impact:**
+- CP behind CG = Stable rocket
+- CP ahead of CG = Unstable rocket (will tumble)
+- Dynamic CP movement affects flight characteristics`,
+
+  'center of gravity': `**Center of Gravity (CG)** ⚖️
+
+The point where the rocket's mass is perfectly balanced.
+
+**Definition:**
+- Balance point of the rocket's total mass
+- Intersection of all gravitational forces
+- Critical reference for stability calculations
+
+**Calculation:**
+CG = Σ(mass × position) / total mass
+
+**Design Considerations:**
+- Forward CG = More stable but lower altitude
+- Aft CG = Less stable but higher performance
+- Changes during flight as propellant burns
+
+**Optimization:**
+Move ballast or components to achieve optimal CG-CP relationship for stable flight.`,
+
+  'stability margin': `**Stability Margin (Static Margin)** 📏
+
+The distance between Center of Gravity and Center of Pressure, measured in calibers.
+
+**Formula:**
+SM = (CP - CG) / Body Diameter
+
+**Stability Zones:**
+- **SM < 0**: Unstable (rocket will tumble)
+- **SM = 0-1**: Marginally stable
+- **SM = 1-2**: Optimally stable
+- **SM > 3**: Over-stable (weathercocking)
+
+**Flight Characteristics:**
+- Low SM: Agile but potentially unstable
+- High SM: Very stable but may weathercock in wind
+- Optimal SM: Balanced performance and stability`,
+
+  'rocket equation': `**Tsiolkovsky Rocket Equation** 🚀
+
+The fundamental equation governing rocket propulsion and performance.
+
+**Formula:**
+Δv = Isp × g × ln(m₀/m₁)
+
+**Variables:**
+- **Δv**: Change in velocity (delta-v)
+- **Isp**: Specific impulse of motor
+- **g**: Gravitational acceleration (9.81 m/s²)
+- **m₀**: Initial mass (rocket + propellant)
+- **m₁**: Final mass (rocket only)
+
+**Applications:**
+- Predicting rocket altitude
+- Motor selection optimization
+- Multi-stage rocket design
+- Payload capacity calculations
+
+**Key Insight:**
+Performance increases exponentially with mass ratio, explaining why lighter rockets achieve higher altitudes.`,
+
+  'drag coefficient': `**Drag Coefficient (Cd)** 💨
+
+Dimensionless number quantifying aerodynamic drag resistance.
+
+**Definition:**
+Cd = Drag Force / (0.5 × ρ × v² × A)
+
+**Typical Values:**
+- **Nose Cone**: 0.15-0.5 (depending on shape)
+- **Body Tube**: 0.45-0.8
+- **Fins**: 0.02-0.1 per fin
+- **Total Rocket**: 0.3-0.8
+
+**Shape Optimization:**
+- Pointed nose cones: Lower Cd
+- Streamlined transitions: Reduced drag
+- Smooth surfaces: Better airflow
+- Fin shape: Affects overall Cd
+
+**Performance Impact:**
+Lower Cd = Higher altitude and velocity. Critical for high-performance rockets.`
+};
+
 const generateAIResponse = (
   components: RocketComponent[], 
   selectedMotor: any, 
@@ -267,6 +389,23 @@ const generateAIResponse = (
   onGenerateDesign?: (design: RocketComponent[]) => void
 ): string => {
   const message = userMessage.toLowerCase();
+  
+  // Educational definitions with "define" keyword
+  if (message.startsWith('define ')) {
+    const term = message.substring(7).trim();
+    const definition = EDUCATIONAL_DEFINITIONS[term as keyof typeof EDUCATIONAL_DEFINITIONS];
+    
+    if (definition) {
+      return definition;
+    } else {
+      return `🔍 **Definition not found for "${term}"**
+
+Available definitions:
+${Object.keys(EDUCATIONAL_DEFINITIONS).map(key => `• ${key}`).join('\n')}
+
+Try: "define barrowman stability" or "define center of pressure"`;
+    }
+  }
   
   // Design generation requests
   if (message.includes('design') && (message.includes('altitude') || message.includes('velocity'))) {

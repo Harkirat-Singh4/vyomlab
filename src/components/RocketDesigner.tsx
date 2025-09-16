@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Rocket, Zap, BarChart3, Settings, Play, Pause, Database, Target } from "lucide-react";
 import { ComponentLibrary } from "./ComponentLibrary";
+import type { ComponentData } from "./ComponentLibrary";
 import { RocketCanvas } from "./RocketCanvas";
 import { SimulationPanel } from "./SimulationPanel";
 import { AIAssistant } from "./AIAssistant";
