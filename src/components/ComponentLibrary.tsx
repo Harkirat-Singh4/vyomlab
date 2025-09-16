@@ -1,60 +1,39 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { 
   Navigation, 
   Cylinder, 
   Triangle, 
   Zap, 
-  Shield, 
-  Circle,
-  Cpu,
-  Radio,
-  Satellite,
-  Camera,
-  Thermometer,
-  Wind,
-  Compass,
-  Battery,
   ArrowUp,
   Umbrella
 } from "lucide-react";
 
-export interface ComponentData {
-  id: string;
-  type: string;
+interface ComponentTemplate {
+  type: "nosecone" | "bodytube" | "fins" | "engine" | "transition" | "parachute";
   name: string;
+  icon: any;
+  width: number;
+  height: number;
+  mass: number;
+  dragCoefficient: number;
+  color: string;
   description: string;
-  icon: React.ComponentType<any>;
-  defaultProps: {
-    width: number;
-    height: number;
-    mass: number;
-    dragCoefficient: number;
-    color: string;
-    material?: string;
-    thickness?: number;
-  };
-  category: string;
 }
 
-const COMPONENT_LIBRARY: ComponentData[] = [
+const componentTemplates: ComponentTemplate[] = [
   {
-    id: "nosecone-1",
     type: "nosecone",
-    name: "Conical Nose Cone", 
-    description: "Reduces drag, guides airflow",
+    name: "Conical Nose Cone",
     icon: Navigation,
-    defaultProps: {
-      width: 40,
-      height: 60,
-      mass: 0.05,
-      dragCoefficient: 0.15,
-      color: "bg-gradient-to-b from-red-500 to-red-600"
-    },
-    category: "structure"
+    width: 40,
+    height: 60,
+    mass: 0.05,
+    dragCoefficient: 0.15,
+    color: "#e11d48",
+    description: "Reduces drag, guides airflow"
   },
   {
     type: "bodytube",
@@ -113,21 +92,16 @@ const COMPONENT_LIBRARY: ComponentData[] = [
   }
 ];
 
-interface ComponentLibraryProps {
-  onComponentDrag?: (component: ComponentData) => void;
-}
-
-export const ComponentLibrary = ({ onComponentDrag }: ComponentLibraryProps = {}) => {
-  const handleDragStart = (e: React.DragEvent, component: ComponentData) => {
+export const ComponentLibrary = () => {
+  const handleDragStart = (e: React.DragEvent, component: ComponentTemplate) => {
     e.dataTransfer.setData("application/json", JSON.stringify(component));
     e.dataTransfer.effectAllowed = "copy";
-    onComponentDrag?.(component);
   };
 
   return (
     <Card className="h-full p-4 cosmic-border">
       <div className="flex items-center gap-2 mb-4">
-        <Cylinder className="h-5 w-5 text-primary" />
+        <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
         <h3 className="font-semibold">Component Library</h3>
       </div>
       
@@ -136,29 +110,39 @@ export const ComponentLibrary = ({ onComponentDrag }: ComponentLibraryProps = {}
       </p>
       
       <div className="space-y-3">
-        {COMPONENT_LIBRARY.slice(0, 6).map((component) => (
+        {componentTemplates.map((component) => (
           <div
-            key={component.id}
+            key={component.type}
             draggable
             onDragStart={(e) => handleDragStart(e, component)}
             className="group cursor-move"
           >
             <Card className="p-3 rocket-glow hover:border-primary/50 transition-all duration-200">
               <div className="flex items-start gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white flex-shrink-0 ${component.defaultProps.color}`}>
+                <div 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center text-white flex-shrink-0"
+                  style={{ backgroundColor: component.color }}
+                >
                   <component.icon className="h-5 w-5" />
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-sm truncate">{component.name}</h4>
-                  <p className="text-xs text-muted-foreground mb-2">{component.description}</p>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-medium text-sm truncate">
+                      {component.name}
+                    </h4>
+                  </div>
+                  
+                  <p className="text-xs text-muted-foreground mb-2">
+                    {component.description}
+                  </p>
                   
                   <div className="flex items-center gap-1 flex-wrap">
                     <Badge variant="outline" className="text-xs px-1">
-                      {(component.defaultProps.mass * 1000).toFixed(0)}g
+                      {component.mass}kg
                     </Badge>
                     <Badge variant="outline" className="text-xs px-1">
-                      Cd {component.defaultProps.dragCoefficient}
+                      Cd {component.dragCoefficient}
                     </Badge>
                   </div>
                 </div>

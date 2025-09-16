@@ -72,11 +72,6 @@ export const FlightDataGraph = ({ flightData, isSimulating }: FlightDataGraphPro
   };
 
   const exportData = () => {
-    if (flightData.length === 0) {
-      alert('No flight data to export. Run a simulation first.');
-      return;
-    }
-
     const csvContent = [
       "Time(s),Altitude(m),Velocity(m/s),Acceleration(m/s²),Thrust(N),Drag(N),Mach,Mass(kg)",
       ...flightData.map(d => 
@@ -88,7 +83,7 @@ export const FlightDataGraph = ({ flightData, isSimulating }: FlightDataGraphPro
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `flight-data-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.csv`;
+    a.download = 'flight-data.csv';
     a.click();
     window.URL.revokeObjectURL(url);
   };

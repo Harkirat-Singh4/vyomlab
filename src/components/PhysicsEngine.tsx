@@ -226,7 +226,7 @@ export class PhysicsEngine {
 
     results.push({ ...currentState });
 
-    while (currentState.time < maxTime && (currentState.altitude > 0 || currentState.velocity > 0)) {
+    while (currentState.time < maxTime && currentState.altitude >= 0) {
       currentState = this.simulateFlightStep(
         currentState,
         rocketPhysics,

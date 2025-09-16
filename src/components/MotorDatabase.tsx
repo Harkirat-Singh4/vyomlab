@@ -231,82 +231,6 @@ const MOTOR_DATABASE: MotorData[] = [
       { time: 4.8, thrust: 7.2 },
       { time: 5.3, thrust: 0 }
     ]
-  },
-
-  // G Class Motors (High Power)
-  {
-    designation: "G80-7",
-    totalImpulse: 120.0,
-    burnTime: 1.5,
-    averageThrust: 80.0,
-    maxThrust: 140.5,
-    propellantMass: 0.0712,
-    totalMass: 0.2136,
-    delay: 7,
-    thrustCurve: [
-      { time: 0, thrust: 0 },
-      { time: 0.05, thrust: 140.5 },
-      { time: 0.3, thrust: 110.2 },
-      { time: 0.8, thrust: 85.4 },
-      { time: 1.2, thrust: 45.8 },
-      { time: 1.5, thrust: 0 }
-    ]
-  },
-  {
-    designation: "G64-4",
-    totalImpulse: 120.0,
-    burnTime: 1.9,
-    averageThrust: 63.2,
-    maxThrust: 98.7,
-    propellantMass: 0.0698,
-    totalMass: 0.2094,
-    delay: 4,
-    thrustCurve: [
-      { time: 0, thrust: 0 },
-      { time: 0.08, thrust: 98.7 },
-      { time: 0.4, thrust: 85.2 },
-      { time: 1.0, thrust: 65.8 },
-      { time: 1.6, thrust: 38.4 },
-      { time: 1.9, thrust: 0 }
-    ]
-  },
-
-  // H Class Motors (High Power)
-  {
-    designation: "H128-5",
-    totalImpulse: 240.0,
-    burnTime: 1.9,
-    averageThrust: 126.3,
-    maxThrust: 220.8,
-    propellantMass: 0.1284,
-    totalMass: 0.3852,
-    delay: 5,
-    thrustCurve: [
-      { time: 0, thrust: 0 },
-      { time: 0.06, thrust: 220.8 },
-      { time: 0.3, thrust: 185.4 },
-      { time: 0.9, thrust: 135.7 },
-      { time: 1.5, thrust: 78.2 },
-      { time: 1.9, thrust: 0 }
-    ]
-  },
-  {
-    designation: "H97-6",
-    totalImpulse: 240.0,
-    burnTime: 2.5,
-    averageThrust: 96.0,
-    maxThrust: 165.3,
-    propellantMass: 0.1247,
-    totalMass: 0.3741,
-    delay: 6,
-    thrustCurve: [
-      { time: 0, thrust: 0 },
-      { time: 0.1, thrust: 165.3 },
-      { time: 0.5, thrust: 142.8 },
-      { time: 1.3, thrust: 98.5 },
-      { time: 2.1, thrust: 54.7 },
-      { time: 2.5, thrust: 0 }
-    ]
   }
 ];
 
@@ -320,7 +244,7 @@ export const MotorDatabase = ({ selectedMotor, onMotorSelect }: MotorDatabasePro
     return matchesSearch && matchesClass;
   });
 
-  const motorClasses = ["all", "a", "b", "c", "d", "e", "f", "g", "h"];
+  const motorClasses = ["all", "a", "b", "c", "d", "e", "f"];
 
   const formatNumber = (num: number, decimals: number = 1) => {
     return num.toFixed(decimals);
@@ -384,8 +308,7 @@ export const MotorDatabase = ({ selectedMotor, onMotorSelect }: MotorDatabasePro
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <h4 className="font-bold text-lg">{motor.designation}</h4>
-                  {(motor.designation.startsWith('E') || motor.designation.startsWith('F') || 
-                    motor.designation.startsWith('G') || motor.designation.startsWith('H')) && (
+                  {motor.designation.startsWith('E') || motor.designation.startsWith('F') && (
                     <Star className="h-4 w-4 text-rocket-warning" />
                   )}
                 </div>
