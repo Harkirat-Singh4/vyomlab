@@ -23,6 +23,11 @@ export interface RocketComponent {
   mass: number;
   dragCoefficient: number;
   color: string;
+  material?: string;
+  thickness?: number;
+  finCount?: number;
+  motorType?: string;
+  deploymentAltitude?: number;
 }
 
 export const RocketDesigner = () => {
@@ -255,7 +260,11 @@ export const RocketDesigner = () => {
               )
             )}
             
-            <AIAssistant components={components} selectedMotor={selectedMotor} />
+            <AIAssistant 
+              components={components} 
+              selectedMotor={selectedMotor} 
+              onGenerateDesign={(design) => setComponents(design)}
+            />
           </div>
         </div>
         
