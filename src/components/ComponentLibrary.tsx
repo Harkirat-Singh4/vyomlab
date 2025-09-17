@@ -57,59 +57,79 @@ const COMPONENT_LIBRARY: ComponentData[] = [
     category: "structure"
   },
   {
+    id: "bodytube-1",
     type: "bodytube",
     name: "Body Tube",
+    description: "Main structural component",
     icon: Cylinder,
-    width: 40,
-    height: 100,
-    mass: 0.15,
-    dragCoefficient: 0.45,
-    color: "#3b82f6",
-    description: "Main structural component"
+    defaultProps: {
+      width: 40,
+      height: 100,
+      mass: 0.15,
+      dragCoefficient: 0.45,
+      color: "bg-gradient-to-b from-blue-500 to-blue-600"
+    },
+    category: "structure"
   },
   {
+    id: "fins-1",
     type: "fins",
     name: "Fin Set",
+    description: "Provides stability and control",
     icon: Triangle,
-    width: 60,
-    height: 40,
-    mass: 0.08,
-    dragCoefficient: 0.02,
-    color: "#10b981",
-    description: "Provides stability and control"
+    defaultProps: {
+      width: 60,
+      height: 40,
+      mass: 0.08,
+      dragCoefficient: 0.02,
+      color: "bg-gradient-to-b from-green-500 to-green-600"
+    },
+    category: "stability"
   },
   {
+    id: "engine-1",
     type: "engine",
     name: "Solid Motor",
+    description: "Propulsion system",
     icon: Zap,
-    width: 35,
-    height: 80,
-    mass: 0.25,
-    dragCoefficient: 0.0,
-    color: "#f59e0b",
-    description: "Propulsion system"
+    defaultProps: {
+      width: 35,
+      height: 80,
+      mass: 0.25,
+      dragCoefficient: 0.0,
+      color: "bg-gradient-to-b from-amber-500 to-amber-600"
+    },
+    category: "propulsion"
   },
   {
+    id: "transition-1",
     type: "transition",
     name: "Transition",
+    description: "Connects different diameters",
     icon: ArrowUp,
-    width: 40,
-    height: 30,
-    mass: 0.03,
-    dragCoefficient: 0.25,
-    color: "#8b5cf6",
-    description: "Connects different diameters"
+    defaultProps: {
+      width: 40,
+      height: 30,
+      mass: 0.03,
+      dragCoefficient: 0.25,
+      color: "bg-gradient-to-b from-purple-500 to-purple-600"
+    },
+    category: "structure"
   },
   {
+    id: "parachute-1",
     type: "parachute",
     name: "Recovery System",
+    description: "Safe landing system",
     icon: Umbrella,
-    width: 30,
-    height: 25,
-    mass: 0.04,
-    dragCoefficient: 1.3,
-    color: "#ec4899",
-    description: "Safe landing system"
+    defaultProps: {
+      width: 30,
+      height: 25,
+      mass: 0.04,
+      dragCoefficient: 1.3,
+      color: "bg-gradient-to-b from-pink-500 to-pink-600"
+    },
+    category: "recovery"
   }
 ];
 
