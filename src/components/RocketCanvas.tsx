@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, RotateCcw, Move, Eye } from "lucide-react";
+import { RocketCanvas3D } from "./RocketCanvas3D";
 import type { RocketComponent } from "./RocketDesigner";
 
 interface RocketCanvasProps {
@@ -81,6 +82,21 @@ export const RocketCanvas = forwardRef<HTMLDivElement, RocketCanvasProps>(({
     components.forEach(comp => onComponentDelete(comp.id));
     onComponentSelect(null);
   };
+
+  // Render 3D view if selected
+  if (view === "3d") {
+    return (
+      <RocketCanvas3D
+        components={components}
+        selectedComponent={selectedComponent}
+        onComponentSelect={onComponentSelect}
+        onComponentUpdate={onComponentUpdate}
+        onComponentDelete={onComponentDelete}
+        onDrop={onDrop}
+        isSimulating={isSimulating}
+      />
+    );
+  }
 
   return (
     <div className="h-full flex flex-col">
