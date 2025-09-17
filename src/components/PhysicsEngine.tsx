@@ -226,7 +226,7 @@ export class PhysicsEngine {
 
     results.push({ ...currentState });
 
-    while (currentState.time < maxTime && (currentState.altitude > 0 || currentState.velocity > 0)) {
+    while (currentState.time < maxTime && (currentState.altitude > 0 || currentState.velocity > 0 || currentState.time < 1)) {
       currentState = this.simulateFlightStep(
         currentState,
         rocketPhysics,
@@ -238,7 +238,11 @@ export class PhysicsEngine {
       results.push({ ...currentState });
 
       // Stop if rocket has landed and velocity is near zero
-      if (currentState.altitude <= 0 && Math.abs(currentState.velocity) < 0.1) {
+      if (currentState.altitude <= 0 && Math.abs(currentState.velocity) < 1.0 && currentState.time > 1) {
+        // Ensure final point shows ground landing
+        currentState.altitude = 0;
+        currentState.velocity = 0;
+        results.push({ ...currentState });
         break;
       }
     }

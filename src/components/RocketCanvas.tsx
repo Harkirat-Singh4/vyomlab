@@ -94,6 +94,7 @@ export const RocketCanvas = forwardRef<HTMLDivElement, RocketCanvasProps>(({
         onComponentDelete={onComponentDelete}
         onDrop={onDrop}
         isSimulating={isSimulating}
+        onViewChange={setView}
       />
     );
   }

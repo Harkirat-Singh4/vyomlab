@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { RotateCcw, Move3D, Eye, Zap } from "lucide-react";
 import type { RocketComponent } from "./RocketDesigner";
 
+
 interface RocketCanvas3DProps {
   components: RocketComponent[];
   selectedComponent: string | null;
@@ -13,6 +14,7 @@ interface RocketCanvas3DProps {
   onComponentDelete: (id: string) => void;
   onDrop: (e: React.DragEvent) => void;
   isSimulating: boolean;
+  onViewChange?: (view: "2d" | "3d") => void;
 }
 
 export const RocketCanvas3D = ({
@@ -22,7 +24,8 @@ export const RocketCanvas3D = ({
   onComponentUpdate,
   onComponentDelete,
   onDrop,
-  isSimulating
+  isSimulating,
+  onViewChange
 }: RocketCanvas3DProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
@@ -52,6 +55,9 @@ export const RocketCanvas3D = ({
     ctx.fillStyle = 'hsl(var(--background))';
     ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
 
+    // Enhanced 3D background
+    drawEnhancedBackground(ctx, canvas.offsetWidth, canvas.offsetHeight);
+    
     // Draw 3D grid
     draw3DGrid(ctx, canvas.offsetWidth, canvas.offsetHeight);
 
@@ -60,38 +66,88 @@ export const RocketCanvas3D = ({
 
   }, [components, rotation, zoom, selectedComponent, isSimulating]);
 
+  const drawEnhancedBackground = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    // Create starfield background
+    ctx.fillStyle = '#0a0a0f';
+    ctx.fillRect(0, 0, width, height);
+    
+    // Add stars
+    for (let i = 0; i < 200; i++) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      const brightness = Math.random();
+      
+      ctx.fillStyle = `rgba(255, 255, 255, ${brightness * 0.8})`;
+      ctx.fillRect(x, y, 1, 1);
+      
+      if (brightness > 0.7) {
+        ctx.fillRect(x - 1, y, 3, 1);
+        ctx.fillRect(x, y - 1, 1, 3);
+      }
+    }
+    
+    // Add nebula effect
+    const gradient = ctx.createRadialGradient(width * 0.7, height * 0.3, 0, width * 0.7, height * 0.3, width * 0.4);
+    gradient.addColorStop(0, 'rgba(100, 50, 200, 0.1)');
+    gradient.addColorStop(0.5, 'rgba(50, 100, 255, 0.05)');
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+  };
+
   const draw3DGrid = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-    ctx.strokeStyle = 'hsl(var(--border))';
-    ctx.lineWidth = 0.5;
-    ctx.globalAlpha = 0.3;
+    ctx.strokeStyle = 'rgba(100, 150, 255, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.6;
 
     const centerX = width / 2;
     const centerY = height / 2;
-    const gridSize = 20 * zoom;
+    const gridSize = 30 * zoom;
 
-    // Draw perspective grid
-    for (let i = -10; i <= 10; i++) {
-      // Vertical lines with perspective
+    // Draw enhanced 3D grid with perspective
+    for (let i = -8; i <= 8; i++) {
+      const alpha = Math.max(0.1, 1 - Math.abs(i) * 0.1);
+      ctx.globalAlpha = alpha * 0.6;
+      
+      // Vertical lines with 3D perspective
       const x1 = centerX + i * gridSize;
-      const y1 = centerY - 200 * zoom;
-      const x2 = centerX + i * gridSize * Math.cos(rotation.y * 0.01);
-      const y2 = centerY + 200 * zoom;
+      const y1 = centerY - 250 * zoom;
+      const x2 = centerX + i * gridSize * Math.cos(rotation.y * 0.015);
+      const y2 = centerY + 250 * zoom;
       
       ctx.beginPath();
       ctx.moveTo(x1, y1);
       ctx.lineTo(x2, y2);
       ctx.stroke();
 
-      // Horizontal lines with perspective
+      // Horizontal lines with depth effect
       const y3 = centerY + i * gridSize;
-      const x3 = centerX - 200 * zoom;
-      const x4 = centerX + 200 * zoom * Math.cos(rotation.y * 0.01);
+      const x3 = centerX - 250 * zoom;
+      const x4 = centerX + 250 * zoom * Math.cos(rotation.y * 0.015);
       
       ctx.beginPath();
       ctx.moveTo(x3, y3);
       ctx.lineTo(x4, y3);
       ctx.stroke();
     }
+    
+    // Add center axis lines
+    ctx.strokeStyle = 'rgba(255, 100, 100, 0.8)';
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 0.8;
+    
+    // Vertical center line
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY - 300 * zoom);
+    ctx.lineTo(centerX, centerY + 300 * zoom);
+    ctx.stroke();
+    
+    // Horizontal center line
+    ctx.beginPath();
+    ctx.moveTo(centerX - 300 * zoom, centerY);
+    ctx.lineTo(centerX + 300 * zoom, centerY);
+    ctx.stroke();
 
     ctx.globalAlpha = 1;
   };
@@ -326,10 +382,19 @@ export const RocketCanvas3D = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={resetView}
+            onClick={() => onViewChange?.("2d")}
             className="flex items-center gap-2"
           >
             <Eye className="h-4 w-4" />
+            2D View
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={resetView}
+            className="flex items-center gap-2"
+          >
+            <RotateCcw className="h-4 w-4" />
             Reset View
           </Button>
           <Button

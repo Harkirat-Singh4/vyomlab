@@ -102,7 +102,7 @@ const generateDesignForRequirements = (requirements: {
       height: bodyDiameter * 1.5,
       mass: 0.025,
       dragCoefficient: 0.15,
-      color: 'bg-gradient-to-b from-rocket-primary to-rocket-secondary',
+      color: 'bg-gradient-to-b from-blue-500 to-blue-600',
       material: 'balsa',
       thickness: 3
     },
@@ -116,7 +116,7 @@ const generateDesignForRequirements = (requirements: {
       height: optimalLength * 30,
       mass: 0.12,
       dragCoefficient: 0.45,
-      color: 'bg-gradient-to-b from-rocket-secondary to-rocket-accent',
+      color: 'bg-gradient-to-b from-gray-500 to-gray-600',
       material: 'cardboard',
       thickness: 2
     },
@@ -130,7 +130,7 @@ const generateDesignForRequirements = (requirements: {
       height: 60 * finSize,
       mass: 0.015 * finCount,
       dragCoefficient: 0.02 * finCount,
-      color: 'bg-gradient-to-r from-rocket-accent to-rocket-warning',
+      color: 'bg-gradient-to-r from-green-500 to-green-600',
       finCount,
       material: 'balsa'
     },
@@ -144,7 +144,7 @@ const generateDesignForRequirements = (requirements: {
       height: 40,
       mass: motorData.mass,
       dragCoefficient: 0.1,
-      color: 'bg-gradient-to-b from-rocket-warning to-red-500',
+      color: 'bg-gradient-to-b from-amber-500 to-red-500',
       motorType: selectedMotor
     },
     {
