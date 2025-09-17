@@ -55,16 +55,46 @@ export const RocketDesigner = () => {
       const y = e.clientY - rect.top;
       
       const newComponent: RocketComponent = {
-        ...component,
         id: `${component.type}-${Date.now()}`,
-        x: Math.max(0, x - component.width / 2),
-        y: Math.max(0, y - component.height / 2),
+        type: component.type,
+        name: component.name,
+        x: Math.max(0, x - component.defaultProps.width / 2),
+        y: Math.max(0, y - component.defaultProps.height / 2),
+        width: component.defaultProps.width,
+        height: component.defaultProps.height,
+        mass: component.defaultProps.mass,
+        dragCoefficient: component.defaultProps.dragCoefficient,
+        color: component.defaultProps.color,
+        material: component.defaultProps.material,
+        thickness: component.defaultProps.thickness,
       };
       
       setComponents(prev => [...prev, newComponent]);
+      setSelectedComponent(newComponent.id);
     } catch (error) {
       console.error("Error parsing dropped component:", error);
     }
+  };
+
+  const createCustomComponent = () => {
+    const customComponent: RocketComponent = {
+      id: `custom-${Date.now()}`,
+      type: "bodytube",
+      name: "Custom Component",
+      x: 200,
+      y: 200,
+      width: 40,
+      height: 80,
+      mass: 0.1,
+      dragCoefficient: 0.4,
+      color: "bg-gradient-to-b from-violet-500 to-violet-600",
+      material: "custom",
+      thickness: 1
+    };
+    
+    setComponents(prev => [...prev, customComponent]);
+    setSelectedComponent(customComponent.id);
+    setShowComponentProps(true);
   };
 
   const handleComponentUpdate = (id: string, updates: Partial<RocketComponent>) => {
@@ -210,15 +240,24 @@ export const RocketDesigner = () => {
                     <Settings className="h-5 w-5 text-primary" />
                     <h3 className="font-semibold">Component Properties</h3>
                   </div>
-                  {selectedComponent && (
+                  <div className="flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setShowComponentProps(true)}
+                      onClick={createCustomComponent}
                     >
-                      Edit
+                      Custom
                     </Button>
-                  )}
+                    {selectedComponent && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowComponentProps(true)}
+                      >
+                        Edit
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 {selectedComponent ? (
                   <div className="space-y-3">

@@ -175,7 +175,7 @@ export const RocketCanvas = forwardRef<HTMLDivElement, RocketCanvasProps>(({
         {components.map((component) => (
           <div
             key={component.id}
-            className={`absolute cursor-move transition-all duration-200 ${
+            className={`absolute cursor-move transition-all duration-200 border border-white/20 ${component.color} ${
               selectedComponent === component.id 
                 ? 'ring-2 ring-primary shadow-glow' 
                 : 'hover:ring-1 hover:ring-primary/50'
@@ -185,7 +185,6 @@ export const RocketCanvas = forwardRef<HTMLDivElement, RocketCanvasProps>(({
               top: component.y,
               width: component.width,
               height: component.height,
-              backgroundColor: component.color,
               borderRadius: component.type === 'nosecone' ? '50% 50% 0 0' :
                             component.type === 'fins' ? '0' :
                             component.type === 'parachute' ? '50%' : '4px'
