@@ -116,7 +116,7 @@ const generateDesignForRequirements = (requirements: {
       height: optimalLength * 30,
       mass: 0.12,
       dragCoefficient: 0.45,
-      color: 'bg-gradient-to-b from-gray-500 to-gray-600',
+      color: 'bg-gradient-to-b from-red-500 to-red-600',
       material: 'cardboard',
       thickness: 2
     },
@@ -144,7 +144,7 @@ const generateDesignForRequirements = (requirements: {
       height: 40,
       mass: motorData.mass,
       dragCoefficient: 0.1,
-      color: 'bg-gradient-to-b from-amber-500 to-red-500',
+      color: 'bg-gradient-to-b from-yellow-500 to-orange-500',
       motorType: selectedMotor
     },
     {
@@ -157,7 +157,7 @@ const generateDesignForRequirements = (requirements: {
       height: 30,
       mass: 0.02,
       dragCoefficient: 1.3,
-      color: 'bg-gradient-to-r from-blue-400 to-cyan-400',
+      color: 'bg-gradient-to-r from-purple-400 to-pink-400',
       deploymentAltitude: targetAltitude * 0.7
     }
   ];

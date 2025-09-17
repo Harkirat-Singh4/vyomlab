@@ -12,8 +12,10 @@ import {
   Wind,
   Crosshair,
   RotateCcw,
-  Activity
+  Activity,
+  Download
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { RocketComponent } from "./RocketDesigner";
 
 interface StabilityAnalysisProps {
@@ -50,6 +52,11 @@ export const StabilityAnalysis = ({ components, selectedMotor }: StabilityAnalys
     // Calculate rocket geometry
     const rocketLength = Math.max(...components.map(c => c.y + c.height)) - Math.min(...components.map(c => c.y));
     const rocketDiameter = Math.max(...components.map(c => c.width));
+    
+    if (rocketLength <= 0 || rocketDiameter <= 0) {
+      setMetrics(null);
+      return;
+    }
     
     // Calculate Center of Gravity
     const totalMass = components.reduce((sum, comp) => {
@@ -370,6 +377,48 @@ export const StabilityAnalysis = ({ components, selectedMotor }: StabilityAnalys
           <p className="text-xs text-muted-foreground mt-2">
             Based on static margin, fin design, and recovery system
           </p>
+        </div>
+
+        {/* Export Analysis Button */}
+        <div className="pt-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const analysisData = [
+                'Stability Analysis Report',
+                `Generated: ${new Date().toLocaleString()}`,
+                '',
+                'Flight Phase Analysis:',
+                `Phase: ${analysisPhase}`,
+                '',
+                'Key Metrics:',
+                `Static Margin: ${metrics.staticMargin.toFixed(2)} calibers`,
+                `Center of Gravity: ${metrics.centerOfGravity.toFixed(1)} mm`,
+                `Center of Pressure: ${metrics.centerOfPressure.toFixed(1)} mm`,
+                `Fin Effectiveness: ${metrics.finEffectiveness.toFixed(0)}%`,
+                `Overall Rating: ${metrics.overallRating.toFixed(0)}%`,
+                '',
+                'Warnings:',
+                ...metrics.warnings.map(w => `- ${w}`),
+                '',
+                'Recommendations:',
+                ...metrics.recommendations.map(r => `- ${r}`)
+              ].join('\n');
+              
+              const blob = new Blob([analysisData], { type: 'text/plain' });
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `stability-analysis-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.txt`;
+              a.click();
+              window.URL.revokeObjectURL(url);
+            }}
+            className="w-full flex items-center justify-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Export Analysis
+          </Button>
         </div>
       </div>
     </Card>
